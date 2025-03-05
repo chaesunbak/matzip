@@ -2,15 +2,21 @@ import { X } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 interface SearchInputProps {
   search: string;
   setSearch: (search: string) => void;
+  className?: string;
 }
 
-export function SearchInput({ search, setSearch }: SearchInputProps) {
+export function SearchInput({
+  search,
+  setSearch,
+  className,
+}: SearchInputProps) {
   return (
-    <div className="relative w-full">
+    <div className={cn("relative w-full", className)}>
       <Input
         placeholder="키워드, 지역 검색"
         value={search}

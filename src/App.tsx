@@ -14,7 +14,6 @@ import { MarkerClusterer } from "@/components/marker-clusterer";
 
 function App() {
   const navermaps = useNavermaps();
-  const [init, setInit] = useState(false);
   const { data = [], isPending, error } = usePlaces();
   const [myLocation, setMyLocation] = useState<Coordinates | null>(null);
   const [map, setMap] = useState<naver.maps.Map | null>(null);
@@ -71,29 +70,10 @@ function App() {
         />
         {/* 19.5rem = SIDEBAR_WIDTH */}
         <MapDiv className="h-full w-full lg:w-[calc(100%-19.5rem)]">
-          <NaverMap
-            defaultCenter={
-              new navermaps.LatLng(defaultCenter.lat, defaultCenter.lng)
-            }
-            defaultZoom={15}
-            // @ts-expect-error: onInit 속성 실제로는 있으나 타입 누락됨 https://github.com/zeakd/react-naver-maps/issues/119
-            onInit={() => {
-              setInit(true);
-            }}
-            ref={setMap}
-            onZoomChanged={(zoom) => {
-              setZoom(zoom);
-            }}
-            logoControl={false} // NAVER 로고 컨트롤의 표시 여부
-            mapDataControl={false} // 지도 데이터 컨트롤의 표시 여부
-            onBoundsChanged={(bounds) => {
-              debounce(() => {
-                setBounds(bounds);
-              }, 200)();
-            }}
-          >
+          <div className="absolute top-0 left-0 z-20 mt-2 flex w-full justify-between gap-2 px-2">
+            <MyLocationControl setMyLocation={setMyLocation} map={map} />
             {/* 필터 버튼 */}
-            <div className="scrollbar-none fixed top-[7px] right-[5px] z-20 flex max-w-[200px] gap-1 overflow-x-auto lg:max-w-[600px] lg:flex-wrap">
+            <div className="scrollbar-none flex max-w-[200px] gap-1 overflow-x-auto md:max-w-[600px] md:flex-wrap">
               {CATEGORIES.map((category) => (
                 <Button
                   key={category}
@@ -116,6 +96,24 @@ function App() {
                 </Button>
               ))}
             </div>
+          </div>
+          <NaverMap
+            defaultCenter={
+              new navermaps.LatLng(defaultCenter.lat, defaultCenter.lng)
+            }
+            defaultZoom={15}
+            ref={setMap}
+            onZoomChanged={(zoom) => {
+              setZoom(zoom);
+            }}
+            logoControl={false} // NAVER 로고 컨트롤의 표시 여부
+            mapDataControl={false} // 지도 데이터 컨트롤의 표시 여부
+            onBoundsChanged={(bounds) => {
+              debounce(() => {
+                setBounds(bounds);
+              }, 200)();
+            }}
+          >
             {/* 데이터를 마커로 표시합니다. */}
             <MarkerClusterer
               places={filteredData}
@@ -123,7 +121,6 @@ function App() {
               setSearch={setSearch}
               bounds={bounds}
             />
-            {init && <MyLocationControl setMyLocation={setMyLocation} />}
           </NaverMap>
         </MapDiv>
       </main>

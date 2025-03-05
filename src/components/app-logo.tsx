@@ -7,13 +7,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { cn } from "@/lib/utils";
 
-export function AppLogo() {
+export function AppLogo({ className }: { className?: string }) {
   const [isHovered, setIsHovered] = useState(false);
 
   return (
     <div
-      className="ml-2 flex items-baseline gap-1 lg:ml-0"
+      className={cn("ml-2 flex items-baseline gap-1 lg:ml-0", className)}
       onMouseEnter={() => {
         setIsHovered(true);
       }}
