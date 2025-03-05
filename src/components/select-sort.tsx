@@ -1,3 +1,12 @@
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
 import type { SortOption } from "@/types";
 
 interface SelectSortProps {
@@ -6,20 +15,23 @@ interface SelectSortProps {
   myLocation: boolean;
 }
 
-export function SlectSort({
+export function SelectSort({
   sortOption,
   setSortOption,
   myLocation,
 }: SelectSortProps) {
   return (
-    <select
-      value={sortOption}
-      onChange={(e) => setSortOption(e.target.value as SortOption)}
-      className="border-input text-muted-foreground bg-background focus-visible:ring-primary focus-within::outline-none h-9 w-20 rounded-md border px-3 py-1 text-sm transition-colors focus-visible:ring-1"
-    >
-      <option value="none">기본</option>
-      <option value="name">이름순</option>
-      {myLocation && <option value="distance">가까운순</option>}
-    </select>
+    <Select value={sortOption} onValueChange={setSortOption}>
+      <SelectTrigger className="w-25">
+        <SelectValue placeholder="정렬" />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectGroup>
+          <SelectItem value="none">기본</SelectItem>
+          <SelectItem value="name">이름순</SelectItem>
+          {myLocation && <SelectItem value="distance">가까운순</SelectItem>}
+        </SelectGroup>
+      </SelectContent>
+    </Select>
   );
 }

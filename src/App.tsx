@@ -1,16 +1,14 @@
 import { Container as MapDiv, NaverMap, useNavermaps } from "react-naver-maps";
 import { useState } from "react";
-import clsx from "clsx";
 import { debounce } from "lodash";
 
 import { usePlaces } from "@/hooks/use-places";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
 import type { Coordinates } from "@/types";
-import { Button } from "@/components/ui/button";
-import { CATEGORIES } from "@/types";
 import { MyLocationControl } from "@/components/my-location-control";
 import { MarkerClusterer } from "@/components/marker-clusterer";
+import { CategoryFilters } from "@/components/category-filters";
 
 function App() {
   const navermaps = useNavermaps();
@@ -69,33 +67,11 @@ function App() {
           setFilters={setFilters}
         />
         {/* 19.5rem = SIDEBAR_WIDTH */}
-        <MapDiv className="h-full w-full lg:w-[calc(100%-19.5rem)]">
+        <MapDiv className="h-full w-full overflow-hidden lg:w-[calc(100%-19.5rem)]">
           <div className="absolute top-0 left-0 z-20 mt-2 flex w-full justify-between gap-2 px-2">
             <MyLocationControl setMyLocation={setMyLocation} map={map} />
             {/* 필터 버튼 */}
-            <div className="scrollbar-none flex max-w-[200px] gap-1 overflow-x-auto md:max-w-[600px] md:flex-wrap">
-              {CATEGORIES.map((category) => (
-                <Button
-                  key={category}
-                  variant="outline"
-                  className={clsx("", {
-                    "bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground":
-                      filters.includes(category),
-                  })}
-                  onClick={() => {
-                    if (filters.includes(category)) {
-                      setFilters(
-                        filters.filter((filter) => filter !== category),
-                      );
-                    } else {
-                      setFilters([...filters, category]);
-                    }
-                  }}
-                >
-                  {category}
-                </Button>
-              ))}
-            </div>
+            <CategoryFilters filters={filters} setFilters={setFilters} />
           </div>
           <NaverMap
             defaultCenter={
