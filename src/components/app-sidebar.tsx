@@ -38,7 +38,8 @@ interface AppSidebarProps {
   setFilters: (filters: string[]) => void;
 }
 
-const snapPoints = ["170px", "340px", "510px", "680px", 1]; // 모바일에서 사이드바 크기 조절 가능한 포인트
+// 모바일에서 사이드바 크기 조절 가능한 포인트
+const snapPoints = ["180px", "340px", "510px", "680px", 1];
 
 // 사이드바 컴포넌트
 // 데스크탑에서는 사이드바 형태로 보여주고, 모바일에서는 드로어 형태로 보여줌
@@ -56,6 +57,7 @@ export function AppSidebar({
   const [sortOption, setSortOption] = useState<SortOption>("none");
   const isMobile = useIsMobile();
   const { width } = useWindowSize();
+
   // 정렬된 데이터
   const sortedData = [...data].sort((a, b) => {
     if (sortOption === "none") return 0;
@@ -290,9 +292,11 @@ export function AppSidebar({
         snapPoints={snapPoints}
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
-        modal={false}
+        modal={false} // 모달 모드 비활성화
       >
-        <DrawerContent className="h-full p-2">
+        <DrawerContent className="h-full min-h-[180px] p-2">
+          {" "}
+          {/* min-height 설정 */}
           <DrawerHeader className="p-0">
             <AppLogo />
             <DrawerTitle className="flex gap-2 p-2">

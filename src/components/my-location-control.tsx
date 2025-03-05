@@ -13,7 +13,7 @@ export function MyLocationControl({
 
   const locationBtnHtml = `
       <a href="/#" 
-        class="abosolute rounded-full border border-input"
+        class="absolute rounded-full border border-input"
         style="
           z-index: 200;
           overflow: hidden;

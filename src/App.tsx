@@ -69,9 +69,8 @@ function App() {
           setSearch={setSearch}
           setFilters={setFilters}
         />
-        <MapDiv
-          className="h-full w-full lg:w-[calc(100%-19.5rem)]" // 19.5rem = SIDEBAR_WIDTH
-        >
+        {/* 19.5rem = SIDEBAR_WIDTH */}
+        <MapDiv className="h-full w-full lg:w-[calc(100%-19.5rem)]">
           <NaverMap
             defaultCenter={
               new navermaps.LatLng(defaultCenter.lat, defaultCenter.lng)
