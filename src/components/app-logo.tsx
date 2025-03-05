@@ -21,7 +21,7 @@ export function AppLogo() {
         setIsHovered(false);
       }}
     >
-      <a href="/" className="flex items-baseline gap-1">
+      <div className="flex items-baseline gap-1">
         <Map
           className={clsx(
             "text-primary h-6 w-6 transition-all duration-500",
@@ -32,7 +32,7 @@ export function AppLogo() {
         <span className="text-muted-foreground text-sm">
           : 인플루언서들의 찐맛집
         </span>
-      </a>
+      </div>
 
       <Popover>
         <PopoverTrigger asChild>
@@ -54,7 +54,15 @@ export function AppLogo() {
                 맛집정보 추가하기, 건의하기
               </a>
               <br />
-              Created by @Chaesunbak
+              Created by{" "}
+              <a
+                href="https://github.com/chaesunbak/matzip"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:underline"
+              >
+                @Chaesunbak
+              </a>
             </p>
           </div>
         </PopoverContent>

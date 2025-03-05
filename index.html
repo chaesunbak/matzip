@@ -20,7 +20,7 @@
       property="og:description"
       content="인플루언서들의 찐맛집 정보를 모아놓은 지도 서비스입니다."
     />
-    <meta property="og:url" content="https://matzip.vercel.app" />
+    <meta property="og:url" content="https://eat-tube.vercel.app/" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary" />
@@ -39,6 +39,20 @@
     <title>먹튜브 - 인플루언서들의 찐맛집</title>
     <link rel="stylesheet" href="/src/index.css" />
   </head>
+  <!-- Google tag (gtag.js) -->
+  <script
+    async
+    src="https://www.googletagmanager.com/gtag/js?id=G-J57G4Q6X05"
+  ></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() {
+      dataLayer.push(arguments);
+    }
+    gtag("js", new Date());
+
+    gtag("config", "G-J57G4Q6X05");
+  </script>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
