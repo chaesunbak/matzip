@@ -59,6 +59,7 @@ export function AppSidebar({
         activeSnapPoint={snap}
         setActiveSnapPoint={setSnap}
         modal={false} // 모달 모드 비활성화
+        repositionInputs={false} // 드로어 모드에서 입력 위치 재배치 비활성화
       >
         <DrawerContent className="h-full min-h-[180px] p-2">
           {" "}
