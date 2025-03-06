@@ -26,7 +26,7 @@ createRoot(document.getElementById("root")!).render(
       <QueryClientProvider client={queryClient}>
         <NavermapsProvider ncpClientId={ncpClientId}>
           <App />
-          <Toaster richColors closeButton />
+          <Toaster richColors />
         </NavermapsProvider>
       </QueryClientProvider>
     </RootErrorBoundary>
