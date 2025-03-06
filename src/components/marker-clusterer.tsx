@@ -1,6 +1,6 @@
 import { useMap, Marker, useNavermaps } from "react-naver-maps";
 import { useMemo } from "react";
-
+import { useSearchParams } from "react-router";
 import type { Place } from "@/types";
 import {
   REGION_CENTERS_LOW_ZOOM,
@@ -10,18 +10,17 @@ import {
 interface MarkerClustererProps {
   places: Place[];
   zoom: number;
-  setSearch: (search: string) => void;
   bounds: naver.maps.PointBounds | null;
 }
 
 export function MarkerClusterer({
   places,
   zoom,
-  setSearch,
   bounds,
 }: MarkerClustererProps) {
   const map = useMap();
   const navermaps = useNavermaps();
+  const [, setSearchParams] = useSearchParams();
 
   const regionGroupsLowZoom = useMemo(
     () =>
@@ -172,7 +171,7 @@ export function MarkerClusterer({
               if (map) {
                 map.morph(position, 16);
               }
-              setSearch(place.이름);
+              setSearchParams({ search: place.이름 });
             }}
             icon={{
               content: `

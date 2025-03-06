@@ -1,6 +1,7 @@
 import { Container as MapDiv, NaverMap, useNavermaps } from "react-naver-maps";
 import { useState } from "react";
 import { debounce } from "lodash";
+import { useSearchParams } from "react-router";
 
 import { usePlaces } from "@/hooks/use-places";
 import { SidebarProvider } from "@/components/ui/sidebar";
@@ -12,13 +13,15 @@ import { CategoryFilters } from "@/components/category-filters";
 
 function App() {
   const navermaps = useNavermaps();
+  const [searchParams] = useSearchParams();
   const { data = [], isPending, error } = usePlaces();
   const [myLocation, setMyLocation] = useState<Coordinates | null>(null);
   const [map, setMap] = useState<naver.maps.Map | null>(null);
   const [filters, setFilters] = useState<string[]>([]); // 카테고리 필터
-  const [search, setSearch] = useState<string>(""); // 검색 필터
   const [zoom, setZoom] = useState<number>(15);
   const [bounds, setBounds] = useState<naver.maps.PointBounds | null>(null);
+
+  const search = searchParams.get("search") || ""; // 검색 필터
 
   const filteredData = data.filter((place) => {
     // 카테고리 필터링
@@ -62,8 +65,6 @@ function App() {
           error={error}
           myLocation={myLocation}
           map={map}
-          search={search}
-          setSearch={setSearch}
           setFilters={setFilters}
         />
         {/* 19.5rem = SIDEBAR_WIDTH */}
@@ -94,7 +95,6 @@ function App() {
             <MarkerClusterer
               places={filteredData}
               zoom={zoom}
-              setSearch={setSearch}
               bounds={bounds}
             />
           </NaverMap>

@@ -1,4 +1,7 @@
 import { X } from "lucide-react";
+import { useSearchParams } from "react-router";
+import { useEffect } from "react";
+import { debounce } from "lodash";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,12 +18,31 @@ export function SearchInput({
   setSearch,
   className,
 }: SearchInputProps) {
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("search")) {
+      setSearch(searchParams.get("search") || "");
+    }
+  }, []);
+
+  const handleSearchChange = debounce((value: string) => {
+    if (value) {
+      setSearchParams({ search: value });
+    } else {
+      setSearchParams({});
+    }
+  }, 300);
+
   return (
     <div className={cn("relative w-full", className)}>
       <Input
         placeholder="키워드, 지역 검색"
         value={search}
-        onChange={(e) => setSearch(e.target.value)}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          handleSearchChange(e.target.value);
+        }}
         className={search ? "pr-8" : ""}
       />
       {search && (
@@ -28,7 +50,10 @@ export function SearchInput({
           variant="ghost"
           size="icon"
           className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0 hover:bg-transparent"
-          onClick={() => setSearch("")}
+          onClick={() => {
+            setSearch("");
+            setSearchParams({});
+          }}
           aria-label="검색어 지우기"
         >
           <X size={14} />

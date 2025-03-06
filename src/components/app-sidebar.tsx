@@ -27,8 +27,6 @@ interface AppSidebarProps {
   error: Error | null;
   myLocation: Coordinates | null;
   map: naver.maps.Map | null;
-  search: string;
-  setSearch: (search: string) => void;
   setFilters: (filters: string[]) => void;
 }
 
@@ -43,13 +41,12 @@ export function AppSidebar({
   error,
   myLocation,
   map,
-  search,
-  setSearch,
   setFilters,
 }: AppSidebarProps) {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [sortOption, setSortOption] = useState<SortOption>("none");
   const isMobile = useIsMobile();
+  const [search, setSearch] = useState("");
 
   if (isMobile) {
     return (
@@ -82,9 +79,9 @@ export function AppSidebar({
             error={error}
             myLocation={myLocation}
             map={map}
-            setSearch={setSearch}
             setFilters={setFilters}
             sortOption={sortOption}
+            setSearch={setSearch}
           />
         </DrawerContent>
       </Drawer>
@@ -109,9 +106,9 @@ export function AppSidebar({
           error={error}
           myLocation={myLocation}
           map={map}
-          setSearch={setSearch}
           setFilters={setFilters}
           sortOption={sortOption}
+          setSearch={setSearch}
         />
       </SidebarContent>
       <SidebarFooter />

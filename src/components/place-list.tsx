@@ -1,5 +1,6 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, memo } from "react";
+import { useSearchParams } from "react-router";
 
 import type { Place } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,8 +15,8 @@ interface PlaceListProps {
   isPending: boolean;
   error: Error | null;
   myLocation: Coordinates | null;
-  map: naver.maps.Map | null;
   setSearch: (search: string) => void;
+  map: naver.maps.Map | null;
   setFilters: (filters: string[]) => void;
   sortOption: SortOption;
 }
@@ -26,10 +27,12 @@ export const PlaceList = memo(function PlaceList({
   error,
   myLocation,
   map,
-  setSearch,
   setFilters,
   sortOption,
+  setSearch,
 }: PlaceListProps) {
+  const [, setSearchParams] = useSearchParams();
+
   // 정렬된 데이터
   const sortedData = [...data].sort((a, b) => {
     if (sortOption === "none") return 0;
@@ -100,6 +103,7 @@ export const PlaceList = memo(function PlaceList({
           size="sm"
           onClick={() => {
             setSearch("");
+            setSearchParams({});
             setFilters([]);
           }}
         >
