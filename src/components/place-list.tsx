@@ -8,6 +8,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import YTLogo from "@/assets/yt_favicon_ringo2.png";
 import NaverMapLogo from "@/assets/naver_map_favicon.png";
+import KakaoMapLogo from "@/assets/kakao_map_favicon.webp";
+import GoogleMapLogo from "@/assets/goggle_map_favicon.png";
 import type { Coordinates, SortOption } from "@/types";
 
 interface PlaceListProps {
@@ -216,22 +218,49 @@ export const PlaceList = memo(function PlaceList({
                       </a>
                     </span>
                   )}
-                  {place["지도 URL"] && (
-                    <span className="rounded-full bg-gray-200 px-[4px] py-[2px]">
-                      <a
-                        href={place["지도 URL"]}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="네이버 지도에서 보기"
-                      >
-                        <img
-                          src={NaverMapLogo}
-                          alt="네이버 지도"
-                          className="h-[15px] w-[15px]"
-                        />
-                      </a>
-                    </span>
-                  )}
+
+                  <span className="rounded-full bg-gray-200 px-[4px] py-[2px]">
+                    <a
+                      href={`https://map.naver.com/p/search/${place.주소.split(" ")[0]}%20${place.주소.split(" ")[1]}%20${place.이름}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="네이버 지도에서 보기"
+                    >
+                      <img
+                        src={NaverMapLogo}
+                        alt="네이버 지도"
+                        className="h-[15px] w-[15px]"
+                      />
+                    </a>
+                  </span>
+                  <span className="rounded-full bg-gray-200 px-[4px] py-[2px]">
+                    <a
+                      href={`https://map.naver.com/p/search/${place.주소.split(" ")[0]}%20${place.주소.split(" ")[1]}%20${place.이름}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="카카오 지도에서 보기"
+                    >
+                      <img
+                        src={KakaoMapLogo}
+                        alt="카카오 지도"
+                        className="h-[15px] w-[15px]"
+                      />
+                    </a>
+                  </span>
+                  <span className="rounded-full bg-gray-200 px-[4px] py-[2px]">
+                    <a
+                      href={`https://www.google.com/maps/search/${place.주소.split(" ")[0]}+${place.주소.split(" ")[1]}+${place.이름}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      title="구글 지도에서 보기"
+                    >
+                      <img
+                        src={GoogleMapLogo}
+                        alt="구글 지도"
+                        className="h-[15px] w-[15px]"
+                      />
+                    </a>
+                  </span>
                 </div>
               </li>
             );
