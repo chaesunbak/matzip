@@ -29,7 +29,7 @@ export function MarkerClusterer({
           const region = place.주소.split(" ")[0]; // 주소의 첫 번째 부분으로 클러스터링
           if (!acc[region]) {
             acc[region] = {
-              count: 0,
+              count: 1,
               places: [],
               displayedName: region,
             };
@@ -52,44 +52,20 @@ export function MarkerClusterer({
       places.reduce(
         (acc, place) => {
           // 서울, 경기, 인천은 시/군/구까지 포함, 나머지는 광역시/도만
-          let region;
-          const addressParts = place.주소.split(" ");
-          if (
-            addressParts[0] === "서울" ||
-            addressParts[0] === "경기" ||
-            addressParts[0] === "인천"
-          ) {
-            region = `${addressParts[0]} ${addressParts[1]}`;
-          } else {
-            region = addressParts[0];
-          }
 
-          if (
-            addressParts[0] === "서울" ||
-            addressParts[0] === "경기" ||
-            addressParts[0] === "인천"
-          ) {
-            if (!acc[region]) {
-              acc[region] = {
-                count: 0,
-                places: [],
-                displayedName: addressParts[1],
-              };
-            }
+          const addressParts = place.주소.split(" ");
+          const region = `${addressParts[0]} ${addressParts[1]}`;
+
+          if (!acc[region]) {
+            acc[region] = {
+              count: 1,
+              places: [],
+              displayedName: addressParts[1],
+            };
+          } else {
             acc[region].count++;
             acc[region].places.push(place);
             acc[region].displayedName = addressParts[1];
-          } else {
-            if (!acc[region]) {
-              acc[region] = {
-                count: 0,
-                places: [],
-                displayedName: region,
-              };
-            }
-            acc[region].count++;
-            acc[region].places.push(place);
-            acc[region].displayedName = region;
           }
 
           return acc;
