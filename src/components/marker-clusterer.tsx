@@ -31,13 +31,18 @@ export function MarkerClusterer({
             acc[region] = {
               count: 0,
               places: [],
+              displayedName: region,
             };
           }
+          acc[region].displayedName = region;
           acc[region].count++;
           acc[region].places.push(place);
           return acc;
         },
-        {} as Record<string, { count: number; places: Place[] }>,
+        {} as Record<
+          string,
+          { count: number; places: Place[]; displayedName: string }
+        >,
       ),
     [places],
   );
@@ -54,23 +59,45 @@ export function MarkerClusterer({
             addressParts[0] === "경기" ||
             addressParts[0] === "인천"
           ) {
-            region =
-              addressParts.length > 1 ? addressParts[1] : addressParts[0];
+            region = `${addressParts[0]} ${addressParts[1]}`;
           } else {
             region = addressParts[0];
           }
 
-          if (!acc[region]) {
-            acc[region] = {
-              count: 0,
-              places: [],
-            };
+          if (
+            addressParts[0] === "서울" ||
+            addressParts[0] === "경기" ||
+            addressParts[0] === "인천"
+          ) {
+            if (!acc[region]) {
+              acc[region] = {
+                count: 0,
+                places: [],
+                displayedName: addressParts[1],
+              };
+            }
+            acc[region].count++;
+            acc[region].places.push(place);
+            acc[region].displayedName = addressParts[1];
+          } else {
+            if (!acc[region]) {
+              acc[region] = {
+                count: 0,
+                places: [],
+                displayedName: region,
+              };
+            }
+            acc[region].count++;
+            acc[region].places.push(place);
+            acc[region].displayedName = region;
           }
-          acc[region].count++;
-          acc[region].places.push(place);
+
           return acc;
         },
-        {} as Record<string, { count: number; places: Place[] }>,
+        {} as Record<
+          string,
+          { count: number; places: Place[]; displayedName: string }
+        >,
       ),
     [places],
   );
@@ -79,38 +106,40 @@ export function MarkerClusterer({
   if (zoom < 10) {
     return (
       <>
-        {Object.entries(regionGroupsLowZoom).map(([region, { count }]) => {
-          const center = REGION_CENTERS_LOW_ZOOM[region];
-          if (!center) return null;
+        {Object.entries(regionGroupsLowZoom).map(
+          ([region, { count, displayedName }]) => {
+            const center = REGION_CENTERS_LOW_ZOOM[region];
+            if (!center) return null;
 
-          const position = new navermaps.LatLng(center.lat, center.lng);
-          //기존코드
-          // 마커가 바운드 밖에 있으면 렌더링하지 않음
-          if (!bounds?.hasPoint(position)) return null;
+            const position = new navermaps.LatLng(center.lat, center.lng);
+            //기존코드
+            // 마커가 바운드 밖에 있으면 렌더링하지 않음
+            if (!bounds?.hasPoint(position)) return null;
 
-          // 마커가 오프셋 바운드 밖에 있으면 렌더링하지 않음
-          // if (!isInOffsetBounds(position)) return null;
+            // 마커가 오프셋 바운드 밖에 있으면 렌더링하지 않음
+            // if (!isInOffsetBounds(position)) return null;
 
-          return (
-            <Marker
-              key={region}
-              defaultPosition={position}
-              onClick={() => {
-                if (map) {
-                  map.morph(position, zoom + 1);
-                }
-              }}
-              icon={{
-                content: `
+            return (
+              <Marker
+                key={region}
+                defaultPosition={position}
+                onClick={() => {
+                  if (map) {
+                    map.morph(position, zoom + 1);
+                  }
+                }}
+                icon={{
+                  content: `
                    <div
                     class="bg-primary text-primary-foreground font-bold flex rounded-full text-center py-0.5 px-2 items-center justify-between overflow-hidden text-clip text-nowrap">
-                    ${region} <span class="text-sm font-normal ml-1">${count}</span>
+                    ${displayedName} <span class="text-sm font-normal ml-1">${count}</span>
                   </div>
                 `,
-              }}
-            />
-          );
-        })}
+                }}
+              />
+            );
+          },
+        )}
       </>
     );
   }
@@ -119,36 +148,38 @@ export function MarkerClusterer({
   if (zoom < 14) {
     return (
       <>
-        {Object.entries(regionGroupsMidZoom).map(([region, { count }]) => {
-          const center = REGION_CENTERS_MID_ZOOM[region];
-          if (!center) return null;
+        {Object.entries(regionGroupsMidZoom).map(
+          ([region, { count, displayedName }]) => {
+            const center = REGION_CENTERS_MID_ZOOM[region];
+            if (!center) return null;
 
-          const position = new navermaps.LatLng(center.lat, center.lng);
+            const position = new navermaps.LatLng(center.lat, center.lng);
 
-          if (!bounds?.hasPoint(position)) return null;
-          // 마커가 오프셋 바운드 밖에 있으면 렌더링하지 않음
-          // if (!isInOffsetBounds(position)) return null;
+            if (!bounds?.hasPoint(position)) return null;
+            // 마커가 오프셋 바운드 밖에 있으면 렌더링하지 않음
+            // if (!isInOffsetBounds(position)) return null;
 
-          return (
-            <Marker
-              key={region}
-              defaultPosition={position}
-              onClick={() => {
-                if (map) {
-                  map.morph(position, zoom + 1);
-                }
-              }}
-              icon={{
-                content: `
+            return (
+              <Marker
+                key={region}
+                defaultPosition={position}
+                onClick={() => {
+                  if (map) {
+                    map.morph(position, zoom + 1);
+                  }
+                }}
+                icon={{
+                  content: `
                   <div 
                     class="bg-primary text-primary-foreground font-bold flex rounded-full text-center py-0.5 px-2 items-center justify-between overflow-hidden text-clip text-nowrap">
-                    ${region} <span class="text-sm font-normal ml-1">${count}</span>
+                    ${displayedName} <span class="text-sm font-normal ml-1">${count}</span>
                   </div>
                 `,
-              }}
-            />
-          );
-        })}
+                }}
+              />
+            );
+          },
+        )}
       </>
     );
   }
