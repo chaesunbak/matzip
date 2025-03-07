@@ -68,7 +68,7 @@ function App() {
           setFilters={setFilters}
         />
         {/* 19.5rem = SIDEBAR_WIDTH */}
-        <MapDiv className="h-full w-full overflow-hidden lg:w-[calc(100%-19.5rem)]">
+        <MapDiv className="lg:w-[calc(100%-19.5rem) h-full w-full overflow-hidden">
           <div className="absolute top-0 left-0 z-20 mt-2 flex w-full justify-between gap-2 px-2">
             <MyLocationControl setMyLocation={setMyLocation} map={map} />
             {/* 필터 버튼 */}
