@@ -72,7 +72,12 @@ export function MyLocationControl({
   };
 
   return (
-    <Button variant="outline" onClick={handleClick} disabled={isLoading}>
+    <Button
+      variant="outline"
+      onClick={handleClick}
+      disabled={isLoading}
+      className="ml-2"
+    >
       {isLoading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
