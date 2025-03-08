@@ -81,7 +81,11 @@ export function MyLocationControl({
       {isLoading ? (
         <Loader2 className="h-4 w-4 animate-spin" />
       ) : (
-        <MapPin className={clsx("h-4 w-4", { "text-blue-300": isOn })} />
+        <MapPin
+          className={clsx("h-4 w-4 transition-colors", {
+            "text-blue-300": isOn,
+          })}
+        />
       )}
     </Button>
   );
