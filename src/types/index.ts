@@ -28,3 +28,17 @@ export const CATEGORIES = [
 export type Category = (typeof CATEGORIES)[number];
 
 export type SortOption = "none" | "name" | "distance";
+
+// Google Analytics의 gtag 함수 타입 선언
+declare global {
+  interface Window {
+    gtag: (
+      command: "event",
+      action: string,
+      params?: {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        [key: string]: any;
+      },
+    ) => void;
+  }
+}

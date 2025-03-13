@@ -27,8 +27,12 @@ export function MyLocationControl({
   const navermaps = useNavermaps();
 
   const handleClick = () => {
-    console.log("handleClick");
     setIsLoading(true);
+
+    // Google Analytics 이벤트 전송
+    if (window.gtag) {
+      window.gtag("event", "clickMyLocation");
+    }
 
     if (!navigator.geolocation) {
       toast.error("이 브라우저에서는 위치 정보를 사용할 수 없습니다.");

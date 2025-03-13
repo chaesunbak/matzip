@@ -103,6 +103,13 @@ export function MarkerClusterer({
                   if (map) {
                     map.morph(position, zoom + 1);
                   }
+
+                  // Google Analytics 이벤트 전송
+                  if (window.gtag) {
+                    window.gtag("event", "clickMarker", {
+                      marker_name: displayedName,
+                    });
+                  }
                 }}
                 icon={{
                   content: `
@@ -143,6 +150,13 @@ export function MarkerClusterer({
                   if (map) {
                     map.morph(position, zoom + 1);
                   }
+
+                  // Google Analytics 이벤트 전송
+                  if (window.gtag) {
+                    window.gtag("event", "clickMarker", {
+                      marker_name: displayedName,
+                    });
+                  }
                 }}
                 icon={{
                   content: `
@@ -179,6 +193,13 @@ export function MarkerClusterer({
                 map.morph(position, 16);
               }
               setSearchParams({ search: place.이름 });
+
+              // Google Analytics 이벤트 전송
+              if (window.gtag) {
+                window.gtag("event", "clickMarker", {
+                  marker_name: place.이름,
+                });
+              }
             }}
             icon={{
               content: `

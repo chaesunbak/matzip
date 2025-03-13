@@ -29,6 +29,12 @@ export function SearchInput({
   const handleSearchChange = debounce((value: string) => {
     if (value) {
       setSearchParams({ search: value });
+
+      if (window.gtag) {
+        window.gtag("event", "search", {
+          search_term: value,
+        });
+      }
     } else {
       setSearchParams({});
     }

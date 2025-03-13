@@ -155,6 +155,13 @@ export const PlaceList = memo(function PlaceList({
                           16,
                         );
                       }
+
+                      // Google Analytics 이벤트 전송
+                      if (window.gtag) {
+                        window.gtag("event", "clickItem", {
+                          marker_name: place.이름,
+                        });
+                      }
                     }}
                   >
                     {place.이름}{" "}
@@ -186,9 +193,23 @@ export const PlaceList = memo(function PlaceList({
                         try {
                           navigator.clipboard.writeText(place.주소);
                           toast.success("주소가 복사되었습니다.");
+
+                          // Google Analytics 이벤트 전송
+                          if (window.gtag) {
+                            window.gtag("event", "copyAddress", {
+                              address: place.주소,
+                            });
+                          }
                         } catch (error) {
                           console.error(error);
                           toast.error("주소 복사에 실패했습니다.");
+
+                          // Google Analytics 이벤트 전송
+                          if (window.gtag) {
+                            window.gtag("event", "copyAddressError", {
+                              address: place.주소,
+                            });
+                          }
                         }
                       }}
                     >
