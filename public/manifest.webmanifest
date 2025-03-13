@@ -1,0 +1,41 @@
+{
+  "name": "먹튜브",
+  "short_name": "먹튜브",
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#ff823b",
+  "background_color": "#fff",
+  "description": "인플루언서들의 찐맛집",
+  "icons": [
+    {
+      "src": "images/icons/icon-48.svg",
+      "sizes": "48x48",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "images/icons/icon-72.svg",
+      "sizes": "72x72",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "images/icons/icon-96.svg",
+      "sizes": "96x96",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "images/icons/icon-144.svg",
+      "sizes": "144x144",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "images/icons/icon-168.svg",
+      "sizes": "168x168",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "images/icons/icon-192.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ]
+}
