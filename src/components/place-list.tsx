@@ -17,7 +17,7 @@ interface PlaceListProps {
   isPending: boolean;
   error: Error | null;
   myLocation: Coordinates | null;
-  setSearch: (search: string) => void;
+  setSearchInput: (searchInput: string) => void;
   map: naver.maps.Map | null;
   setFilters: (filters: string[]) => void;
   sortOption: SortOption;
@@ -31,7 +31,7 @@ export const PlaceList = memo(function PlaceList({
   map,
   setFilters,
   sortOption,
-  setSearch,
+  setSearchInput,
 }: PlaceListProps) {
   const [, setSearchParams] = useSearchParams();
 
@@ -104,7 +104,7 @@ export const PlaceList = memo(function PlaceList({
           variant="outline"
           size="sm"
           onClick={() => {
-            setSearch("");
+            setSearchInput("");
             setSearchParams({});
             setFilters([]);
           }}

@@ -8,21 +8,21 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface SearchInputProps {
-  search: string;
-  setSearch: (search: string) => void;
+  searchInput: string;
+  setSearchInput: (searchInput: string) => void;
   className?: string;
 }
 
 export function SearchInput({
-  search,
-  setSearch,
+  searchInput,
+  setSearchInput,
   className,
 }: SearchInputProps) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (searchParams.get("search")) {
-      setSearch(searchParams.get("search") || "");
+      setSearchInput(searchParams.get("search") || "");
     }
   }, []);
 
@@ -44,20 +44,20 @@ export function SearchInput({
     <div className={cn("relative w-full", className)}>
       <Input
         placeholder="키워드, 지역 검색"
-        value={search}
+        value={searchInput}
         onChange={(e) => {
-          setSearch(e.target.value);
+          setSearchInput(e.target.value);
           handleSearchChange(e.target.value);
         }}
-        className={search ? "pr-8" : ""}
+        className={searchInput ? "pr-8" : ""}
       />
-      {search && (
+      {searchInput && (
         <Button
           variant="ghost"
           size="icon"
           className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0 hover:bg-transparent"
           onClick={() => {
-            setSearch("");
+            setSearchInput("");
             setSearchParams({});
           }}
           aria-label="검색어 지우기"

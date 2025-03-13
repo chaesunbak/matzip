@@ -11,12 +11,14 @@ interface MarkerClustererProps {
   places: Place[];
   zoom: number;
   bounds: naver.maps.PointBounds | null;
+  setSearchInput: (searchInput: string) => void;
 }
 
 export function MarkerClusterer({
   places,
   zoom,
   bounds,
+  setSearchInput,
 }: MarkerClustererProps) {
   const map = useMap();
   const navermaps = useNavermaps();
@@ -192,6 +194,7 @@ export function MarkerClusterer({
               if (map) {
                 map.morph(position, 16);
               }
+              setSearchInput(place.이름);
               setSearchParams({ search: place.이름 });
 
               // Google Analytics 이벤트 전송

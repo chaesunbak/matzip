@@ -20,6 +20,7 @@ function App() {
   const [filters, setFilters] = useState<string[]>([]); // 카테고리 필터
   const [zoom, setZoom] = useState<number>(15);
   const [bounds, setBounds] = useState<naver.maps.PointBounds | null>(null);
+  const [searchInput, setSearchInput] = useState<string>(""); // 검색 필터
 
   const search = searchParams.get("search") || ""; // 검색 필터
 
@@ -66,6 +67,8 @@ function App() {
           myLocation={myLocation}
           map={map}
           setFilters={setFilters}
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
         />
         {/* 19.5rem = SIDEBAR_WIDTH */}
         <MapDiv className="lg:w-[calc(100%-19.5rem) h-full w-full overflow-hidden">
@@ -96,6 +99,7 @@ function App() {
               places={filteredData}
               zoom={zoom}
               bounds={bounds}
+              setSearchInput={setSearchInput}
             />
           </NaverMap>
         </MapDiv>

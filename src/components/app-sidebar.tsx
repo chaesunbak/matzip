@@ -28,6 +28,8 @@ interface AppSidebarProps {
   myLocation: Coordinates | null;
   map: naver.maps.Map | null;
   setFilters: (filters: string[]) => void;
+  searchInput: string;
+  setSearchInput: (searchInput: string) => void;
 }
 
 // 모바일에서 사이드바 크기 조절 가능한 포인트
@@ -42,11 +44,12 @@ export function AppSidebar({
   myLocation,
   map,
   setFilters,
+  searchInput,
+  setSearchInput,
 }: AppSidebarProps) {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [sortOption, setSortOption] = useState<SortOption>("none");
   const isMobile = useIsMobile();
-  const [search, setSearch] = useState("");
 
   if (isMobile) {
     return (
@@ -64,7 +67,10 @@ export function AppSidebar({
           <DrawerHeader className="p-0">
             <AppLogo className="md:hidden" />
             <DrawerTitle className="flex gap-1 p-2">
-              <SearchInput search={search} setSearch={setSearch} />
+              <SearchInput
+                searchInput={searchInput}
+                setSearchInput={setSearchInput}
+              />
               <SelectSort
                 sortOption={sortOption}
                 setSortOption={setSortOption}
@@ -81,7 +87,7 @@ export function AppSidebar({
             map={map}
             setFilters={setFilters}
             sortOption={sortOption}
-            setSearch={setSearch}
+            setSearchInput={setSearchInput}
           />
         </DrawerContent>
       </Drawer>
@@ -92,7 +98,10 @@ export function AppSidebar({
     <Sidebar>
       <SidebarHeader className="flex gap-2">
         <AppLogo />
-        <SearchInput search={search} setSearch={setSearch} />
+        <SearchInput
+          searchInput={searchInput}
+          setSearchInput={setSearchInput}
+        />
         <SelectSort
           sortOption={sortOption}
           setSortOption={setSortOption}
@@ -108,7 +117,7 @@ export function AppSidebar({
           map={map}
           setFilters={setFilters}
           sortOption={sortOption}
-          setSearch={setSearch}
+          setSearchInput={setSearchInput}
         />
       </SidebarContent>
       <SidebarFooter />
