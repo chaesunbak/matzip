@@ -3,12 +3,13 @@ import clsx from "clsx";
 import { CATEGORIES } from "@/types";
 import { Button } from "@/components/ui/button";
 
-interface CategoryFiltersProps {
+export function CategoryFilters({
+  filters,
+  setFilters,
+}: {
   filters: string[];
   setFilters: (filters: string[]) => void;
-}
-
-export function CategoryFilters({ filters, setFilters }: CategoryFiltersProps) {
+}) {
   return (
     <div className="scrollbar-none flex max-w-[200px] gap-1 overflow-x-auto md:max-w-[600px] md:flex-wrap">
       {CATEGORIES.map((category) => (

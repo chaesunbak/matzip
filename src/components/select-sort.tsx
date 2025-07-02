@@ -9,17 +9,15 @@ import {
 
 import type { SortOption } from "@/types";
 
-interface SelectSortProps {
-  sortOption: SortOption;
-  setSortOption: (sortOption: SortOption) => void;
-  myLocation: boolean;
-}
-
 export function SelectSort({
   sortOption,
   setSortOption,
   myLocation,
-}: SelectSortProps) {
+}: {
+  sortOption: SortOption;
+  setSortOption: (sortOption: SortOption) => void;
+  myLocation: boolean;
+}) {
   return (
     <Select value={sortOption} onValueChange={setSortOption}>
       <SelectTrigger className="w-25">

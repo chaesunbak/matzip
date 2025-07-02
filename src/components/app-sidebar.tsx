@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 import {
   Sidebar,
@@ -21,17 +21,6 @@ import { SelectSort } from "@/components/select-sort";
 import type { SortOption } from "@/types";
 import { PlaceList } from "@/components/place-list";
 
-interface AppSidebarProps {
-  data: Place[];
-  isPending: boolean;
-  error: Error | null;
-  myLocation: Coordinates | null;
-  map: naver.maps.Map | null;
-  setFilters: (filters: string[]) => void;
-  searchInput: string;
-  setSearchInput: (searchInput: string) => void;
-}
-
 // 모바일에서 사이드바 크기 조절 가능한 포인트
 const snapPoints = [0.3, 0.5, 0.9];
 
@@ -46,10 +35,23 @@ export function AppSidebar({
   setFilters,
   searchInput,
   setSearchInput,
-}: AppSidebarProps) {
+}: {
+  data: Place[];
+  isPending: boolean;
+  error: Error | null;
+  myLocation: Coordinates | null;
+  map: naver.maps.Map | null;
+  setFilters: (filters: string[]) => void;
+  searchInput: string;
+  setSearchInput: (searchInput: string) => void;
+}) {
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
   const [sortOption, setSortOption] = useState<SortOption>("none");
   const isMobile = useIsMobile();
+
+  useEffect(() => {
+    setSnap(snapPoints[0]);
+  }, [isMobile]);
 
   if (isMobile) {
     return (

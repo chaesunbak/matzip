@@ -7,19 +7,17 @@ import {
   REGION_CENTERS_MID_ZOOM,
 } from "@/lib/constants";
 
-interface MarkerClustererProps {
-  places: Place[];
-  zoom: number;
-  bounds: naver.maps.PointBounds | null;
-  setSearchInput: (searchInput: string) => void;
-}
-
 export function MarkerClusterer({
   places,
   zoom,
   bounds,
   setSearchInput,
-}: MarkerClustererProps) {
+}: {
+  places: Place[];
+  zoom: number;
+  bounds: naver.maps.PointBounds | null;
+  setSearchInput: (searchInput: string) => void;
+}) {
   const map = useMap();
   const navermaps = useNavermaps();
   const [, setSearchParams] = useSearchParams();

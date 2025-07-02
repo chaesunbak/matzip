@@ -5,13 +5,7 @@ import { toast } from "sonner";
 import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
-
 import type { Coordinates } from "@/types";
-
-interface MyLocationControlProps {
-  setMyLocation: (coordinates: Coordinates) => void;
-  map: naver.maps.Map | null;
-}
 
 const DEFAULT_LOCATION: Coordinates = {
   lat: 37.3595704,
@@ -21,7 +15,10 @@ const DEFAULT_LOCATION: Coordinates = {
 export function MyLocationControl({
   setMyLocation,
   map,
-}: MyLocationControlProps) {
+}: {
+  setMyLocation: (coordinates: Coordinates) => void;
+  map: naver.maps.Map | null;
+}) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOn, setIsOn] = useState(false);
   const navermaps = useNavermaps();

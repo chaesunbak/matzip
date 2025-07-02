@@ -7,24 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
-interface SearchInputProps {
-  searchInput: string;
-  setSearchInput: (searchInput: string) => void;
-  className?: string;
-}
-
 export function SearchInput({
   searchInput,
   setSearchInput,
   className,
-}: SearchInputProps) {
+}: {
+  searchInput: string;
+  setSearchInput: (searchInput: string) => void;
+  className?: string;
+}) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   useEffect(() => {
     if (searchParams.get("search")) {
       setSearchInput(searchParams.get("search") || "");
     }
-  }, []);
+  }, [searchParams, setSearchInput]);
 
   const handleSearchChange = debounce((value: string) => {
     if (value) {

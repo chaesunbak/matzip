@@ -12,17 +12,6 @@ import KakaoMapLogo from "@/assets/kakao_map_favicon.webp";
 import GoogleMapLogo from "@/assets/goggle_map_favicon.png";
 import type { Coordinates, SortOption } from "@/types";
 
-interface PlaceListProps {
-  data: Place[];
-  isPending: boolean;
-  error: Error | null;
-  myLocation: Coordinates | null;
-  setSearchInput: (searchInput: string) => void;
-  map: naver.maps.Map | null;
-  setFilters: (filters: string[]) => void;
-  sortOption: SortOption;
-}
-
 export const PlaceList = memo(function PlaceList({
   data,
   isPending,
@@ -32,7 +21,16 @@ export const PlaceList = memo(function PlaceList({
   setFilters,
   sortOption,
   setSearchInput,
-}: PlaceListProps) {
+}: {
+  data: Place[];
+  isPending: boolean;
+  error: Error | null;
+  myLocation: Coordinates | null;
+  setSearchInput: (searchInput: string) => void;
+  map: naver.maps.Map | null;
+  setFilters: (filters: string[]) => void;
+  sortOption: SortOption;
+}) {
   const [, setSearchParams] = useSearchParams();
 
   // 정렬된 데이터
