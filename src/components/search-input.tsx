@@ -1,7 +1,5 @@
 import { X } from "lucide-react";
-import { useSearchParams } from "react-router";
-import { useEffect } from "react";
-import { debounce } from "lodash";
+import debounce from "lodash/debounce";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,25 +14,11 @@ export function SearchInput({
   setSearchInput: (searchInput: string) => void;
   className?: string;
 }) {
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  useEffect(() => {
-    if (searchParams.get("search")) {
-      setSearchInput(searchParams.get("search") || "");
-    }
-  }, [searchParams, setSearchInput]);
-
   const handleSearchChange = debounce((value: string) => {
-    if (value) {
-      setSearchParams({ search: value });
-
-      if (window.gtag) {
-        window.gtag("event", "search", {
-          search_term: value,
-        });
-      }
-    } else {
-      setSearchParams({});
+    if (value && window.gtag) {
+      window.gtag("event", "search", {
+        search_term: value,
+      });
     }
   }, 300);
 
@@ -56,7 +40,7 @@ export function SearchInput({
           className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0 hover:bg-transparent"
           onClick={() => {
             setSearchInput("");
-            setSearchParams({});
+            handleSearchChange.cancel();
           }}
           aria-label="검색어 지우기"
         >

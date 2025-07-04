@@ -1,32 +1,51 @@
-import { useState } from "react";
-import { useNavermaps } from "react-naver-maps";
+import { useState, memo } from "react";
 import { MapPin, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
 import type { Coordinates } from "@/types";
+import { useMapContext } from "@/hooks/use-map-context";
 
 const DEFAULT_LOCATION: Coordinates = {
   lat: 37.3595704,
   lng: 127.105399,
 }; // 네이버 그린팩토리
 
-export function MyLocationControl({
+interface MyLocationControlProps {
+  setMyLocation: (coordinates: Coordinates | null) => void;
+}
+
+export const MyLocationControl = memo(function MyLocationControl({
   setMyLocation,
-  map,
-}: {
-  setMyLocation: (coordinates: Coordinates) => void;
-  map: naver.maps.Map | null;
-}) {
+}: MyLocationControlProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOn, setIsOn] = useState(false);
-  const navermaps = useNavermaps();
+  const { moveTo } = useMapContext();
+
+  const handleSuccess = (position: GeolocationPosition) => {
+    const location: Coordinates = {
+      lat: position.coords.latitude,
+      lng: position.coords.longitude,
+    };
+
+    setMyLocation(location);
+    moveTo(location, 16);
+    setIsOn(true);
+    setIsLoading(false);
+  };
+
+  const handleError = (error: GeolocationPositionError) => {
+    console.error("Error getting location:", error);
+    toast.error("위치 정보를 가져오는데 실패했습니다.");
+    setMyLocation(DEFAULT_LOCATION);
+    moveTo(DEFAULT_LOCATION, 17);
+    setIsLoading(false);
+  };
 
   const handleClick = () => {
     setIsLoading(true);
 
-    // Google Analytics 이벤트 전송
     if (window.gtag) {
       window.gtag("event", "clickMyLocation");
     }
@@ -34,42 +53,16 @@ export function MyLocationControl({
     if (!navigator.geolocation) {
       toast.error("이 브라우저에서는 위치 정보를 사용할 수 없습니다.");
       setMyLocation(DEFAULT_LOCATION);
+      moveTo(DEFAULT_LOCATION, 17);
       setIsLoading(false);
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const location: Coordinates = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        setMyLocation(location);
-        setIsOn(true);
-        if (map) {
-          map.morph(new navermaps.LatLng(location.lat, location.lng), 16);
-        }
-        setIsLoading(false);
-      },
-      (error) => {
-        console.error("Error getting location:", error);
-        toast.error("위치 정보를 가져오는데 실패했습니다.");
-        setMyLocation(DEFAULT_LOCATION);
-        if (map) {
-          map.setCenter(
-            new navermaps.LatLng(DEFAULT_LOCATION.lat, DEFAULT_LOCATION.lng),
-          );
-          map.setZoom(17);
-        }
-        setIsLoading(false);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 5000,
-        maximumAge: 0,
-      },
-    );
+    navigator.geolocation.getCurrentPosition(handleSuccess, handleError, {
+      enableHighAccuracy: true,
+      timeout: 5000,
+      maximumAge: 0,
+    });
   };
 
   return (
@@ -90,4 +83,4 @@ export function MyLocationControl({
       )}
     </Button>
   );
-}
+});

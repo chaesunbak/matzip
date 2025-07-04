@@ -1,6 +1,5 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
 import { useRef, memo } from "react";
-import { useSearchParams } from "react-router";
 
 import type { Place } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,13 +10,13 @@ import NaverMapLogo from "@/assets/naver_map_favicon.png";
 import KakaoMapLogo from "@/assets/kakao_map_favicon.webp";
 import GoogleMapLogo from "@/assets/goggle_map_favicon.png";
 import type { Coordinates, SortOption } from "@/types";
+import { useMapContext } from "@/hooks/use-map-context";
 
 export const PlaceList = memo(function PlaceList({
   data,
   isPending,
   error,
   myLocation,
-  map,
   setFilters,
   sortOption,
   setSearchInput,
@@ -27,12 +26,10 @@ export const PlaceList = memo(function PlaceList({
   error: Error | null;
   myLocation: Coordinates | null;
   setSearchInput: (searchInput: string) => void;
-  map: naver.maps.Map | null;
   setFilters: (filters: string[]) => void;
   sortOption: SortOption;
 }) {
-  const [, setSearchParams] = useSearchParams();
-
+  const { moveTo } = useMapContext();
   // 정렬된 데이터
   const sortedData = [...data].sort((a, b) => {
     if (sortOption === "none") return 0;
@@ -103,7 +100,6 @@ export const PlaceList = memo(function PlaceList({
           size="sm"
           onClick={() => {
             setSearchInput("");
-            setSearchParams({});
             setFilters([]);
           }}
         >
@@ -147,12 +143,7 @@ export const PlaceList = memo(function PlaceList({
                     className="inline cursor-pointer font-bold hover:underline"
                     title="클릭하여 지도에서 보기"
                     onClick={() => {
-                      if (map) {
-                        map.morph(
-                          new naver.maps.LatLng(place.위도, place.경도),
-                          16,
-                        );
-                      }
+                      moveTo({ lat: place.위도, lng: place.경도 }, 16);
 
                       // Google Analytics 이벤트 전송
                       if (window.gtag) {

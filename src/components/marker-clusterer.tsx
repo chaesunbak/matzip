@@ -1,26 +1,55 @@
-import { useMap, Marker, useNavermaps } from "react-naver-maps";
-import { useMemo } from "react";
-import { useSearchParams } from "react-router";
+import { Marker, useNavermaps } from "react-naver-maps";
+import { useMemo, memo } from "react";
+
 import type { Place } from "@/types";
 import {
   REGION_CENTERS_LOW_ZOOM,
   REGION_CENTERS_MID_ZOOM,
 } from "@/lib/constants";
+import { useMapContext } from "@/hooks/use-map-context";
 
-export function MarkerClusterer({
-  places,
-  zoom,
-  bounds,
-  setSearchInput,
-}: {
+interface MarkerClustererProps {
   places: Place[];
   zoom: number;
   bounds: naver.maps.PointBounds | null;
   setSearchInput: (searchInput: string) => void;
+}
+
+const ClusterMarker = memo(function ClusterMarker({
+  position,
+  displayedName,
+  count,
+  onClick,
+}: {
+  position: naver.maps.LatLng;
+  displayedName: string;
+  count: number;
+  onClick: () => void;
 }) {
-  const map = useMap();
+  return (
+    <Marker
+      defaultPosition={position}
+      onClick={onClick}
+      icon={{
+        content: `
+         <div
+          class="bg-primary text-primary-foreground font-bold flex rounded-full text-center py-0.5 px-2 items-center justify-between overflow-hidden text-clip text-nowrap">
+          ${displayedName} <span class="text-sm font-normal ml-1">${count}</span>
+        </div>
+      `,
+      }}
+    />
+  );
+});
+
+export const MarkerClusterer = memo(function MarkerClusterer({
+  places,
+  zoom,
+  bounds,
+  setSearchInput,
+}: MarkerClustererProps) {
   const navermaps = useNavermaps();
-  const [, setSearchParams] = useSearchParams();
+  const { moveTo } = useMapContext();
 
   const regionGroupsLowZoom = useMemo(
     () =>
@@ -88,21 +117,16 @@ export function MarkerClusterer({
             if (!center) return null;
 
             const position = new navermaps.LatLng(center.lat, center.lng);
-            //기존코드
-            // 마커가 바운드 밖에 있으면 렌더링하지 않음
             if (!bounds?.hasPoint(position)) return null;
 
-            // 마커가 오프셋 바운드 밖에 있으면 렌더링하지 않음
-            // if (!isInOffsetBounds(position)) return null;
-
             return (
-              <Marker
+              <ClusterMarker
                 key={region}
-                defaultPosition={position}
+                position={position}
+                displayedName={displayedName}
+                count={count}
                 onClick={() => {
-                  if (map) {
-                    map.morph(position, zoom + 1);
-                  }
+                  moveTo({ lat: center.lat, lng: center.lng }, zoom + 2);
 
                   // Google Analytics 이벤트 전송
                   if (window.gtag) {
@@ -110,14 +134,6 @@ export function MarkerClusterer({
                       marker_name: displayedName,
                     });
                   }
-                }}
-                icon={{
-                  content: `
-                   <div
-                    class="bg-primary text-primary-foreground font-bold flex rounded-full text-center py-0.5 px-2 items-center justify-between overflow-hidden text-clip text-nowrap">
-                    ${displayedName} <span class="text-sm font-normal ml-1">${count}</span>
-                  </div>
-                `,
                 }}
               />
             );
@@ -139,17 +155,15 @@ export function MarkerClusterer({
             const position = new navermaps.LatLng(center.lat, center.lng);
 
             if (!bounds?.hasPoint(position)) return null;
-            // 마커가 오프셋 바운드 밖에 있으면 렌더링하지 않음
-            // if (!isInOffsetBounds(position)) return null;
 
             return (
-              <Marker
+              <ClusterMarker
                 key={region}
-                defaultPosition={position}
+                position={position}
+                displayedName={displayedName}
+                count={count}
                 onClick={() => {
-                  if (map) {
-                    map.morph(position, zoom + 1);
-                  }
+                  moveTo({ lat: center.lat, lng: center.lng }, zoom + 2);
 
                   // Google Analytics 이벤트 전송
                   if (window.gtag) {
@@ -157,14 +171,6 @@ export function MarkerClusterer({
                       marker_name: displayedName,
                     });
                   }
-                }}
-                icon={{
-                  content: `
-                  <div 
-                    class="bg-primary text-primary-foreground font-bold flex rounded-full text-center py-0.5 px-2 items-center justify-between overflow-hidden text-clip text-nowrap">
-                    ${displayedName} <span class="text-sm font-normal ml-1">${count}</span>
-                  </div>
-                `,
                 }}
               />
             );
@@ -181,19 +187,14 @@ export function MarkerClusterer({
         const position = new navermaps.LatLng(place.위도, place.경도);
 
         if (!bounds?.hasPoint(position)) return null;
-        // 마커가 오프셋 바운드 밖에 있으면 렌더링하지 않음
-        // if (!isInOffsetBounds(position)) return null;
 
         return (
           <Marker
             key={index}
             defaultPosition={position}
             onClick={() => {
-              if (map) {
-                map.morph(position, 16);
-              }
+              moveTo({ lat: place.위도, lng: place.경도 }, 16);
               setSearchInput(place.이름);
-              setSearchParams({ search: place.이름 });
 
               // Google Analytics 이벤트 전송
               if (window.gtag) {
@@ -215,4 +216,4 @@ export function MarkerClusterer({
       })}
     </>
   );
-}
+});
