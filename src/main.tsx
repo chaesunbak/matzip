@@ -9,12 +9,12 @@ import { RootErrorBoundary } from "@/components/root-error-boundary";
 import { MapProvider } from "@/contexts/map-context";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
-const ncpClientId = import.meta.env.VITE_NAVER_CLIENT_ID;
+const ncpKeyId = import.meta.env.VITE_NAVER_CLIENT_ID;
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <RootErrorBoundary>
-      <NavermapsProvider ncpClientId={ncpClientId}>
+      <NavermapsProvider ncpKeyId={ncpKeyId}>
         <SidebarProvider className="h-screen w-screen">
           <MapProvider>
             <App />
