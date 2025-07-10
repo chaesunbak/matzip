@@ -5,23 +5,19 @@ import clsx from "clsx";
 
 import { Button } from "@/components/ui/button";
 import type { Coordinates } from "@/types";
-import { useMapContext } from "@/hooks/use-map-context";
-
-const DEFAULT_LOCATION: Coordinates = {
-  lat: 37.3595704,
-  lng: 127.105399,
-}; // 네이버 그린팩토리
+import { DEFAULT_LOCATION } from "@/lib/constants";
 
 interface MyLocationControlProps {
   setMyLocation: (coordinates: Coordinates | null) => void;
+  moveTo: (coords: Coordinates, zoom?: number) => void;
 }
 
-export const MyLocationControl = memo(function MyLocationControl({
+function PureMyLocationControl({
   setMyLocation,
+  moveTo,
 }: MyLocationControlProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isOn, setIsOn] = useState(false);
-  const { moveTo } = useMapContext();
 
   const handleSuccess = (position: GeolocationPosition) => {
     const location: Coordinates = {
@@ -83,4 +79,6 @@ export const MyLocationControl = memo(function MyLocationControl({
       )}
     </Button>
   );
-});
+}
+
+export const MyLocationControl = memo(PureMyLocationControl);

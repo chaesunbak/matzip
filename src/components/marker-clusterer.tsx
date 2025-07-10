@@ -6,13 +6,14 @@ import {
   REGION_CENTERS_LOW_ZOOM,
   REGION_CENTERS_MID_ZOOM,
 } from "@/lib/constants";
-import { useMapContext } from "@/hooks/use-map-context";
+import type { Coordinates } from "@/types";
 
 interface MarkerClustererProps {
   places: Place[];
   zoom: number;
   bounds: naver.maps.PointBounds | null;
   setSearchInput: (searchInput: string) => void;
+  moveTo: (coords: Coordinates, zoom?: number) => void;
 }
 
 const ClusterMarker = memo(function ClusterMarker({
@@ -47,9 +48,9 @@ export const MarkerClusterer = memo(function MarkerClusterer({
   zoom,
   bounds,
   setSearchInput,
+  moveTo,
 }: MarkerClustererProps) {
   const navermaps = useNavermaps();
-  const { moveTo } = useMapContext();
 
   const regionGroupsLowZoom = useMemo(
     () =>
