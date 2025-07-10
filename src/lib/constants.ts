@@ -334,3 +334,9 @@ export const REGION_CENTERS_MID_ZOOM: Record<string, Coordinates> = {
   ...ULSAN_DISTRICTS,
   ...BUSAN_DISTRICTS,
 };
+
+// 네이버 그린팩토리
+export const DEFAULT_LOCATION: Coordinates = {
+  lat: 37.3595704,
+  lng: 127.105399,
+};
