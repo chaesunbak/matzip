@@ -1,5 +1,4 @@
-import { X } from "lucide-react";
-import debounce from "lodash/debounce";
+import { X, Loader2 } from "lucide-react";
 
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -9,19 +8,13 @@ export function SearchInput({
   searchInput,
   setSearchInput,
   className,
+  isSearching,
 }: {
   searchInput: string;
   setSearchInput: (searchInput: string) => void;
   className?: string;
+  isSearching: boolean;
 }) {
-  const handleSearchChange = debounce((value: string) => {
-    if (value && window.gtag) {
-      window.gtag("event", "search", {
-        search_term: value,
-      });
-    }
-  }, 300);
-
   return (
     <div className={cn("relative w-full", className)}>
       <Input
@@ -29,23 +22,28 @@ export function SearchInput({
         value={searchInput}
         onChange={(e) => {
           setSearchInput(e.target.value);
-          handleSearchChange(e.target.value);
         }}
         className={searchInput ? "pr-8" : ""}
       />
-      {searchInput && (
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0 hover:bg-transparent"
-          onClick={() => {
-            setSearchInput("");
-            handleSearchChange.cancel();
-          }}
-          aria-label="검색어 지우기"
-        >
-          <X size={14} />
-        </Button>
+      {isSearching ? (
+        <Loader2
+          size={14}
+          className="text-muted-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 animate-spin p-1"
+        />
+      ) : (
+        searchInput && (
+          <Button
+            variant="ghost"
+            size="icon"
+            className="text-muted-foreground hover:text-foreground absolute top-1/2 right-1 h-6 w-6 -translate-y-1/2 p-0 hover:bg-transparent"
+            onClick={() => {
+              setSearchInput("");
+            }}
+            aria-label="검색어 지우기"
+          >
+            <X size={14} />
+          </Button>
+        )
       )}
     </div>
   );
