@@ -1,5 +1,5 @@
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useRef, memo } from "react";
+import { useRef } from "react";
 
 import type { Place } from "@/types";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import type { Coordinates } from "@/types";
 import { PlaceItem } from "./place-item";
 
-function PurePlaceList({
+export function PlaceList({
   data,
   isPending,
   error,
@@ -127,5 +127,3 @@ function PurePlaceList({
     </div>
   );
 }
-
-export const PlaceList = memo(PurePlaceList);

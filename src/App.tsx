@@ -101,7 +101,7 @@ export default function App() {
           </>
         }
       >
-        <div className="flex-1">
+        <div className="h-full flex-1">
           <PlaceList
             data={sortedData}
             isPending={isPlacesPending || isSearching}
