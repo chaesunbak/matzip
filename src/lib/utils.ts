@@ -49,8 +49,8 @@ export const setCache = <T>(key: string, data: T): void => {
 
 export async function cacheFetch<T>(
   key: string,
-  fetchFn: (signal: AbortSignal) => Promise<T>,
-  signal: AbortSignal,
+  fetchFn: (signal?: AbortSignal) => Promise<T>,
+  signal?: AbortSignal,
 ): Promise<T> {
   const cachedData = getCache(key);
   if (cachedData) {
