@@ -1,4 +1,4 @@
-import { useState, useEffect, memo, ReactNode } from "react";
+import { useState, useEffect, memo, type ReactNode } from "react";
 
 import {
   Sidebar,
@@ -54,7 +54,7 @@ function PureAppLayout({
             <DrawerTitle className="flex gap-1 p-2">{header}</DrawerTitle>
             <DrawerDescription></DrawerDescription>
           </DrawerHeader>
-          <div className="flex-1 overflow-y-auto">{children}</div>
+          <div className="flex-1">{children}</div>
         </DrawerContent>
       </Drawer>
     );
