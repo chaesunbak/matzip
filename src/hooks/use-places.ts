@@ -9,38 +9,23 @@ export const usePlaces = () => {
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    const abortController = new AbortController();
-    const { signal } = abortController;
-
     const fetchData = async () => {
       try {
-        const data = await cacheFetch(
-          "places",
-          (signal) => fetchPlaces(signal),
-          signal,
-        );
+        const data = await cacheFetch("places", () => fetchPlaces());
         setData(data);
       } catch (error) {
-        if (error instanceof Error && error.name === "AbortError") {
-          console.log("Fetch aborted");
-          return;
-        }
         setError(error as Error);
       } finally {
         setIsPending(false);
       }
     };
     fetchData();
-
-    return () => {
-      abortController.abort();
-    };
   }, []);
 
   return { data, isPending, error };
 };
 
-const fetchPlaces = async (signal: AbortSignal): Promise<Place[]> => {
+const fetchPlaces = async (signal?: AbortSignal): Promise<Place[]> => {
   const response = await fetch(
     `https://script.google.com/macros/s/AKfycbxycMjPlGw2fgKf3wRohgxlYItfEh6IYn7Qz80tMW9ccDe68mLn8tenDfqrgd2MmVMs/exec?sheetname=시트1`,
     {
