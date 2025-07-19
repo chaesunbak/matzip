@@ -26,26 +26,40 @@ export const usePlaces = () => {
 };
 
 const fetchPlaces = async (signal?: AbortSignal): Promise<Place[]> => {
-  const response = await fetch(
-    `https://script.google.com/macros/s/AKfycbxycMjPlGw2fgKf3wRohgxlYItfEh6IYn7Qz80tMW9ccDe68mLn8tenDfqrgd2MmVMs/exec?sheetname=시트1`,
-    {
-      redirect: "follow",
-      method: "GET",
-      headers: {
-        Accept: "application/json",
+  const startTime = performance.now();
+  let success = false;
+  try {
+    const response = await fetch(
+      `https://script.google.com/macros/s/AKfycbxycMjPlGw2fgKf3wRohgxlYItfEh6IYn7Qz80tMW9ccDe68mLn8tenDfqrgd2MmVMs/exec?sheetname=시트1`,
+      {
+        redirect: "follow",
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        signal,
       },
-      signal,
-    },
-  );
+    );
 
-  if (!response.ok) {
-    throw new Error(`[${response.status}] ${response.statusText}`);
+    if (!response.ok) {
+      throw new Error(`[${response.status}] ${response.statusText}`);
+    }
+
+    // 응답 텍스트를 먼저 확인
+    const responseText = await response.text();
+
+    // 텍스트를 JSON으로 파싱
+    const parsedData = JSON.parse(responseText);
+    success = true;
+    return parsedData;
+  } finally {
+    const endTime = performance.now();
+    const duration = endTime - startTime;
+    if (window.gtag) {
+      window.gtag("event", "fetch_places", {
+        "duration(ms)": Math.round(duration),
+        result: success ? "success" : "failure",
+      });
+    }
   }
-
-  // 응답 텍스트를 먼저 확인
-  const responseText = await response.text();
-
-  // 텍스트를 JSON으로 파싱
-  const parsedData = JSON.parse(responseText);
-  return parsedData;
 };
