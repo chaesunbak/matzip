@@ -1,11 +1,7 @@
 import { Marker, useNavermaps } from "react-naver-maps";
-import { useMemo, memo } from "react";
+import { useMemo, memo, useCallback } from "react";
 
 import type { Place } from "@/types";
-import {
-  REGION_CENTERS_LOW_ZOOM,
-  REGION_CENTERS_MID_ZOOM,
-} from "@/lib/constants";
 import type { Coordinates } from "@/types";
 
 interface MarkerClustererProps {
@@ -16,7 +12,96 @@ interface MarkerClustererProps {
   moveTo: (coords: Coordinates, zoom?: number) => void;
 }
 
-const ClusterMarker = memo(function ClusterMarker({
+type RegionGroup = {
+  count: number;
+  places: Place[];
+  displayedName: string;
+  latSum: number;
+  lngSum: number;
+};
+
+function PureMarkerClusterer({
+  places,
+  zoom,
+  bounds,
+  setSearchInput,
+  moveTo,
+}: MarkerClustererProps) {
+  const regionGroupsLowZoom = useMemo(
+    () =>
+      groupPlacesByRegion(places, (place) => {
+        const region = place.주소.split(" ")[0];
+        return { key: region, displayedName: region };
+      }),
+    [places],
+  );
+
+  const regionGroupsMidZoom = useMemo(
+    () =>
+      groupPlacesByRegion(places, (place) => {
+        const addressParts = place.주소.split(" ");
+        const key = `${addressParts[0]} ${addressParts[1]}`;
+        const displayedName = addressParts[1];
+        return { key, displayedName };
+      }),
+    [places],
+  );
+
+  // 줌 레벨이 10 미만일 때 (광역시/도 단위 클러스터링)
+  if (zoom < 10) {
+    return (
+      <>
+        {Object.entries(regionGroupsLowZoom).map(([region, group]) => (
+          <RegionClusterMarker
+            key={region}
+            region={region}
+            group={group}
+            bounds={bounds}
+            moveTo={moveTo}
+            zoom={zoom}
+          />
+        ))}
+      </>
+    );
+  }
+
+  // 줌 레벨이 10 이상 14 미만일 때 (시/군/구 단위 클러스터링)
+  if (zoom < 14) {
+    return (
+      <>
+        {Object.entries(regionGroupsMidZoom).map(([region, group]) => (
+          <RegionClusterMarker
+            key={region}
+            region={region}
+            group={group}
+            bounds={bounds}
+            moveTo={moveTo}
+            zoom={zoom}
+          />
+        ))}
+      </>
+    );
+  }
+
+  // 줌 레벨이 14 이상일 때 (개별 장소 마커)
+  return (
+    <>
+      {places.map((place, index) => (
+        <PlaceMarker
+          key={index}
+          place={place}
+          index={index}
+          bounds={bounds}
+          moveTo={moveTo}
+          setSearchInput={setSearchInput}
+        />
+      ))}
+    </>
+  );
+}
+export const MarkerClusterer = memo(PureMarkerClusterer);
+
+function PureClusterMarker({
   position,
   displayedName,
   count,
@@ -41,180 +126,133 @@ const ClusterMarker = memo(function ClusterMarker({
       }}
     />
   );
-});
+}
+const ClusterMarker = memo(PureClusterMarker);
 
-export const MarkerClusterer = memo(function MarkerClusterer({
-  places,
-  zoom,
+const RegionClusterMarker = memo(function RegionClusterMarker({
+  region,
+  group,
   bounds,
-  setSearchInput,
   moveTo,
-}: MarkerClustererProps) {
+  zoom,
+}: {
+  region: string;
+  group: RegionGroup;
+  bounds: naver.maps.PointBounds | null;
+  moveTo: (coords: Coordinates, zoom?: number) => void;
+  zoom: number;
+}) {
+  const { count, displayedName, latSum, lngSum } = group;
   const navermaps = useNavermaps();
 
-  const regionGroupsLowZoom = useMemo(
-    () =>
-      places.reduce(
-        (acc, place) => {
-          const region = place.주소.split(" ")[0]; // 주소의 첫 번째 부분으로 클러스터링
-          if (!acc[region]) {
-            acc[region] = {
-              count: 1,
-              places: [],
-              displayedName: region,
-            };
-          }
-          acc[region].displayedName = region;
-          acc[region].count++;
-          acc[region].places.push(place);
-          return acc;
-        },
-        {} as Record<
-          string,
-          { count: number; places: Place[]; displayedName: string }
-        >,
-      ),
-    [places],
+  const { avgLat, avgLng } = useMemo(
+    () => ({
+      avgLat: latSum / count,
+      avgLng: lngSum / count,
+    }),
+    [latSum, lngSum, count],
   );
 
-  const regionGroupsMidZoom = useMemo(
-    () =>
-      places.reduce(
-        (acc, place) => {
-          // 서울, 경기, 인천은 시/군/구까지 포함, 나머지는 광역시/도만
-
-          const addressParts = place.주소.split(" ");
-          const region = `${addressParts[0]} ${addressParts[1]}`;
-
-          if (!acc[region]) {
-            acc[region] = {
-              count: 1,
-              places: [],
-              displayedName: addressParts[1],
-            };
-          } else {
-            acc[region].count++;
-            acc[region].places.push(place);
-            acc[region].displayedName = addressParts[1];
-          }
-
-          return acc;
-        },
-        {} as Record<
-          string,
-          { count: number; places: Place[]; displayedName: string }
-        >,
-      ),
-    [places],
+  const position = useMemo(
+    () => new navermaps.LatLng(avgLat, avgLng),
+    [navermaps, avgLat, avgLng],
   );
 
-  // 줌 레벨이 10 미만일 때 (광역시/도 단위 클러스터링)
-  if (zoom < 10) {
-    return (
-      <>
-        {Object.entries(regionGroupsLowZoom).map(
-          ([region, { count, displayedName }]) => {
-            const center = REGION_CENTERS_LOW_ZOOM[region];
-            if (!center) return null;
+  const onClick = useCallback(() => {
+    moveTo({ lat: avgLat, lng: avgLng }, zoom + 2);
 
-            const position = new navermaps.LatLng(center.lat, center.lng);
-            if (!bounds?.hasPoint(position)) return null;
+    if (window.gtag) {
+      window.gtag("event", "clickMarker", {
+        marker_name: displayedName,
+      });
+    }
+  }, [moveTo, avgLat, avgLng, zoom, displayedName]);
 
-            return (
-              <ClusterMarker
-                key={region}
-                position={position}
-                displayedName={displayedName}
-                count={count}
-                onClick={() => {
-                  moveTo({ lat: center.lat, lng: center.lng }, zoom + 2);
+  if (!bounds?.hasPoint(position)) return null;
 
-                  // Google Analytics 이벤트 전송
-                  if (window.gtag) {
-                    window.gtag("event", "clickMarker", {
-                      marker_name: displayedName,
-                    });
-                  }
-                }}
-              />
-            );
-          },
-        )}
-      </>
-    );
-  }
-
-  // 줌 레벨이 10 이상 14 미만일 때 (시/군/구 단위 클러스터링)
-  if (zoom < 14) {
-    return (
-      <>
-        {Object.entries(regionGroupsMidZoom).map(
-          ([region, { count, displayedName }]) => {
-            const center = REGION_CENTERS_MID_ZOOM[region];
-            if (!center) return null;
-
-            const position = new navermaps.LatLng(center.lat, center.lng);
-
-            if (!bounds?.hasPoint(position)) return null;
-
-            return (
-              <ClusterMarker
-                key={region}
-                position={position}
-                displayedName={displayedName}
-                count={count}
-                onClick={() => {
-                  moveTo({ lat: center.lat, lng: center.lng }, zoom + 2);
-
-                  // Google Analytics 이벤트 전송
-                  if (window.gtag) {
-                    window.gtag("event", "clickMarker", {
-                      marker_name: displayedName,
-                    });
-                  }
-                }}
-              />
-            );
-          },
-        )}
-      </>
-    );
-  }
-
-  // 줌 레벨이 14 이상일 때 (개별 장소 마커)
   return (
-    <>
-      {places.map((place, index) => {
-        const position = new navermaps.LatLng(place.위도, place.경도);
-
-        if (!bounds?.hasPoint(position)) return null;
-
-        return (
-          <Marker
-            key={index}
-            defaultPosition={position}
-            onClick={() => {
-              moveTo({ lat: place.위도, lng: place.경도 }, 16);
-              setSearchInput(place.이름);
-
-              // Google Analytics 이벤트 전송
-              if (window.gtag) {
-                window.gtag("event", "clickMarker", {
-                  marker_name: place.이름,
-                });
-              }
-            }}
-            icon={{
-              content: `
-                <div class="full bg-primary text-primary-foreground flex flex-col rounded-full text-center py-0.5 px-2 items-center justify-between overflow-hidden text-clip text-nowrap">
-                  <div class="text-sm font-extrabold">${place.이름}</div>
-                  <div class="text-xs font-semibold">${place.분류} ${place.태그}</div>
-                </div>
-              `,
-            }}
-          />
-        );
-      })}
-    </>
+    <ClusterMarker
+      key={region}
+      position={position}
+      displayedName={displayedName}
+      count={count}
+      onClick={onClick}
+    />
   );
 });
+
+const PlaceMarker = memo(function PlaceMarker({
+  place,
+  index,
+  bounds,
+  moveTo,
+  setSearchInput,
+}: {
+  place: Place;
+  index: number;
+  bounds: naver.maps.PointBounds | null;
+  moveTo: (coords: Coordinates, zoom?: number) => void;
+  setSearchInput: (searchInput: string) => void;
+}) {
+  const navermaps = useNavermaps();
+  const position = useMemo(
+    () => new navermaps.LatLng(place.위도, place.경도),
+    [navermaps, place.위도, place.경도],
+  );
+
+  const onClick = useCallback(() => {
+    moveTo({ lat: place.위도, lng: place.경도 }, 16);
+    setSearchInput(place.이름);
+
+    if (window.gtag) {
+      window.gtag("event", "clickMarker", {
+        marker_name: place.이름,
+      });
+    }
+  }, [moveTo, setSearchInput, place.위도, place.경도, place.이름]);
+
+  if (!bounds?.hasPoint(position)) return null;
+
+  return (
+    <Marker
+      key={index}
+      defaultPosition={position}
+      onClick={onClick}
+      icon={{
+        content: `
+          <div class="full bg-primary text-primary-foreground flex flex-col rounded-full text-center py-0.5 px-2 items-center justify-between overflow-hidden text-clip text-nowrap">
+            <div class="text-sm font-extrabold">${place.이름}</div>
+            <div class="text-xs font-semibold">${place.분류} ${place.태그}</div>
+          </div>
+        `,
+      }}
+    />
+  );
+});
+
+function groupPlacesByRegion(
+  places: Place[],
+  getRegionInfo: (place: Place) => { key: string; displayedName: string },
+): Record<string, RegionGroup> {
+  return places.reduce(
+    (acc, place) => {
+      const { key, displayedName } = getRegionInfo(place);
+
+      if (!acc[key]) {
+        acc[key] = {
+          count: 0,
+          places: [],
+          displayedName,
+          latSum: 0,
+          lngSum: 0,
+        };
+      }
+      acc[key].count++;
+      acc[key].places.push(place);
+      acc[key].latSum += place.위도;
+      acc[key].lngSum += place.경도;
+      return acc;
+    },
+    {} as Record<string, RegionGroup>,
+  );
+}
