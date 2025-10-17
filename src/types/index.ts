@@ -12,7 +12,13 @@ export interface Place {
   경도: number;
   매체: string;
   "매체 URL": string;
-  "지도 URL": string;
+}
+
+export interface PlacesApiResponse {
+  ok: boolean;
+  headers: string[];
+  rows: (string | number)[][];
+  totalRows: number;
 }
 
 export const CATEGORIES = [
