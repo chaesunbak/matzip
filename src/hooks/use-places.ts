@@ -30,7 +30,7 @@ const fetchPlaces = async (signal?: AbortSignal): Promise<Place[]> => {
   let success = false;
   try {
     const response = await fetch(
-      `https://script.google.com/macros/s/AKfycbxqjP6rY-ZE4uhjJ3IP5n5UhuQoi0Jhuk0goo3XIhD-JtsfGrYXXWySh_SwbrCKO02X/exec?sheetname=시트1`,
+      `https://script.google.com/macros/s/AKfycbxycMjPlGw2fgKf3wRohgxlYItfEh6IYn7Qz80tMW9ccDe68mLn8tenDfqrgd2MmVMs/exec?sheetname=시트1`,
       {
         redirect: "follow",
         method: "GET",
