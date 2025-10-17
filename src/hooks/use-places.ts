@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 
-import type { Place } from "@/types";
-import { cacheFetch } from "@/lib/utils";
+import type { Place, PlacesApiResponse } from "@/types";
 
 export const usePlaces = () => {
   const [data, setData] = useState<Place[]>([]);
@@ -11,8 +10,25 @@ export const usePlaces = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await cacheFetch("places", () => fetchPlaces());
-        setData(data);
+        const responseData = await fetchPlaces();
+        const { headers, rows } = responseData;
+
+        const transformedData: Place[] = rows.map((row) => {
+          const placeObject: Partial<Place> = {};
+          headers.forEach((header, index) => {
+            const key = header as keyof Place;
+            const value = row[index];
+
+            if (key === "위도" || key === "경도") {
+              placeObject[key] = Number(value);
+            } else {
+              placeObject[key] = value as string;
+            }
+          });
+          return placeObject as Place;
+        });
+
+        setData(transformedData);
       } catch (error) {
         setError(error as Error);
       } finally {
@@ -25,7 +41,9 @@ export const usePlaces = () => {
   return { data, isPending, error };
 };
 
-const fetchPlaces = async (signal?: AbortSignal): Promise<Place[]> => {
+const fetchPlaces = async (
+  signal?: AbortSignal,
+): Promise<PlacesApiResponse> => {
   const startTime = performance.now();
   let success = false;
   try {
@@ -34,6 +52,7 @@ const fetchPlaces = async (signal?: AbortSignal): Promise<Place[]> => {
       {
         redirect: "follow",
         method: "GET",
+        cache: "no-cache",
         headers: {
           Accept: "application/json",
         },
@@ -44,14 +63,10 @@ const fetchPlaces = async (signal?: AbortSignal): Promise<Place[]> => {
     if (!response.ok) {
       throw new Error(`[${response.status}] ${response.statusText}`);
     }
-
-    // 응답 텍스트를 먼저 확인
-    const responseText = await response.text();
-
-    // 텍스트를 JSON으로 파싱
-    const parsedData = JSON.parse(responseText);
     success = true;
-    return parsedData;
+    const data = await response.json();
+
+    return data;
   } finally {
     const endTime = performance.now();
     const duration = endTime - startTime;
